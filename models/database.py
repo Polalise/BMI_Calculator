@@ -23,7 +23,7 @@ class Database:
         except Error as error:
             print(f"MariaDB 연결 중 오류 발생: {error}")
 
-    def save_bmi_record(self, weight, height, bmi, category):
+    def save_bmi_record(self, weight, height, bmi, category, member_id=None):
         """BMI 기록을 데이터베이스에 저장합니다."""
         if self.connection is None:
             print("데이터베이스 연결이 없습니다.")
@@ -32,15 +32,54 @@ class Database:
         try:
             with self.connection.cursor() as cursor:
                 query = """
-                INSERT INTO bmi_records (weight, height, bmi, category)
-                VALUES (%s, %s, %s, %s)
+                INSERT INTO bmi_records (member_id, weight, height, bmi, category)
+                VALUES (%s, %s, %s, %s, %s)
                 """
-                cursor.execute(query, (weight, height, bmi, category))
+                cursor.execute(query, (member_id, weight, height, bmi, category))
 
             self.connection.commit()
             return True
         except Error as error:
             print(f"데이터 저장 중 오류 발생: {error}")
+            return False
+
+    def save_activity_log(
+        self,
+        action_type,
+        description=None,
+        member_id=None,
+        request_uri=None,
+        http_method=None,
+        status_code=None,
+    ):
+        if self.connection is None:
+            print("Database connection is not available.")
+            return False
+
+        try:
+            with self.connection.cursor() as cursor:
+                query = """
+                INSERT INTO activity_logs
+                    (member_id, action_type, description, request_uri, http_method, status_code)
+                VALUES
+                    (%s, %s, %s, %s, %s, %s)
+                """
+                cursor.execute(
+                    query,
+                    (
+                        member_id,
+                        action_type,
+                        description,
+                        request_uri,
+                        http_method,
+                        status_code,
+                    ),
+                )
+
+            self.connection.commit()
+            return True
+        except Error as error:
+            print(f"Log save error: {error}")
             return False
 
     def get_bmi_records(self, limit=10):

@@ -19,6 +19,11 @@ def index():
     return render_template("index.html")
 
 
+@bmi_bp.route("/bmi", methods=["GET"])
+def bmi_form():
+    return render_template("bmi.html", is_logged_in=False)
+
+
 @bmi_bp.route("/calculate", methods=["POST"])
 def calculate():
     try:
@@ -26,7 +31,11 @@ def calculate():
         height = float(request.form["height"])
 
         if weight <= 0 or height <= 0:
-            return render_template("index.html", error="체중과 신장은 양수여야 합니다.")
+            return render_template(
+                "bmi.html",
+                error="체중과 신장은 양수여야 합니다.",
+                is_logged_in=True,
+            )
 
         calculator = BMICalculator(weight, height)
         result = calculator.get_result()
@@ -41,4 +50,8 @@ def calculate():
             height=height,
         )
     except ValueError:
-        return render_template("index.html", error="유효한 숫자를 입력해주세요.")
+        return render_template(
+            "bmi.html",
+            error="유효한 숫자를 입력해주세요.",
+            is_logged_in=True,
+        )
