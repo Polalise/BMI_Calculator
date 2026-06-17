@@ -8,7 +8,6 @@ from routes import register_routes
 
 
 def create_app():
-    """Flask 애플리케이션을 생성하고 설정합니다."""
     app = Flask(__name__)
     app.config.from_object(dbSetting)
 

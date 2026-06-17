@@ -5,7 +5,6 @@ from routes.statistics_routes import statistics_bp
 
 
 def register_routes(app, db):
-    """애플리케이션에 모든 Blueprint를 등록합니다."""
     init_bmi_db(db)
     init_history_db(db)
     init_member_db(db)

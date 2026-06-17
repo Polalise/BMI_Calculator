@@ -24,6 +24,7 @@ def login():
 
         if result["success"]:
             member = result["member"]
+            session["member_id"] = member["login_id"]
             session["login_id"] = member["login_id"]
             session["name"] = member["name"]
             return redirect(url_for("bmi.bmi_form"))
