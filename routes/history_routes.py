@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, session
 
 history_bp = Blueprint("history", __name__)
 
@@ -11,5 +11,6 @@ def init_db(database_instance):
 
 @history_bp.route("/history")
 def history():
-    records = db.get_bmi_records(10)
+    login_id = session.get("login_id")
+    records = db.get_bmi_records(login_id, limit=10)
     return render_template("history.html", records=records)
