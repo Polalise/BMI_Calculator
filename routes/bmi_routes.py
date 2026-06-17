@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, session
 
 from services.bmi_service import BMICalculator
 
@@ -21,7 +21,8 @@ def index():
 
 @bmi_bp.route("/bmi", methods=["GET"])
 def bmi_form():
-    return render_template("bmi.html", is_logged_in=False)
+    is_logged_in = session.get("login_id") is not None
+    return render_template("bmi.html", is_logged_in=is_logged_in)
 
 
 @bmi_bp.route("/calculate", methods=["POST"])
@@ -40,7 +41,8 @@ def calculate():
         calculator = BMICalculator(weight, height)
         result = calculator.get_result()
 
-        db.save_bmi_record(weight, height, result["bmi"], result["category"])
+        login_id = session.get("login_id")
+        db.save_bmi_record(login_id, weight, height, result["bmi"], result["category"])
 
         return render_template(
             "result.html",
