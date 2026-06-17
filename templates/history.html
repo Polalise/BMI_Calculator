@@ -23,6 +23,7 @@
                         <th>체중 (kg)</th>
                         <th>BMI</th>
                         <th>비만도</th>
+                        <th>관리</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -33,6 +34,11 @@
                         <td>{{ record.weight }}</td>
                         <td>{{ record.bmi }}</td>
                         <td>{{ record.category }}</td>
+                        <td>
+                            <form action="{{ url_for('history.delete_history', record_id=record.id) }}" method="post">
+                                <button type="submit">삭제</button>
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
