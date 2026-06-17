@@ -1,64 +1,46 @@
 from pymysql import Error
-from pymysql.err import IntegrityError
 
 
-def authenticate_member(db, login_id, password):
-    if db is None or db.connection is None:
-        print("Database connection is not available.")
-        return None
+class MemberModel:
+    """DB access for members."""
 
-    try:
-        with db.connection.cursor() as cursor:
-            query = """
-            SELECT login_id, name
-            FROM member
-            WHERE login_id = %s
-              AND password = %s
-            """
-            cursor.execute(query, (login_id, password))
-            return cursor.fetchone()
-    except Error as error:
-        print(f"Member authentication error: {error}")
-        return None
+    def __init__(self, database):
+        self.database = database
 
+    def find_by_user_id(self, user_id):
+        if self.database.connection is None:
+            print("데이터베이스 연결이 없습니다.")
+            return None
 
-def find_member_by_login_id(db, login_id):
-    if db is None or db.connection is None:
-        print("Database connection is not available.")
-        return None
+        try:
+            with self.database.connection.cursor() as cursor:
+                query = """
+                SELECT id, user_id, password, name, created_at, activation_type
+                FROM members
+                WHERE user_id = %s
+                """
+                cursor.execute(query, (user_id,))
+                return cursor.fetchone()
+        except Error as error:
+            print(f"회원 조회 중 오류 발생: {error}")
+            return None
 
-    try:
-        with db.connection.cursor() as cursor:
-            query = """
-            SELECT login_id, password, name
-            FROM member
-            WHERE login_id = %s
-            """
-            cursor.execute(query, (login_id,))
-            return cursor.fetchone()
-    except Error as error:
-        print(f"Member find error: {error}")
-        return None
+    def create_member(self, user_id, password, name):
+        if self.database.connection is None:
+            print("데이터베이스 연결이 없습니다.")
+            return None
 
+        try:
+            with self.database.connection.cursor() as cursor:
+                query = """
+                INSERT INTO members (user_id, password, name)
+                VALUES (%s, %s, %s)
+                """
+                cursor.execute(query, (user_id, password, name))
+                member_id = cursor.lastrowid
 
-def create_member(db, login_id, password, name):
-    if db is None or db.connection is None:
-        print("Database connection is not available.")
-        return False
-
-    try:
-        with db.connection.cursor() as cursor:
-            query = """
-            INSERT INTO member (login_id, password, name)
-            VALUES (%s, %s, %s)
-            """
-            cursor.execute(query, (login_id, password, name))
-
-        db.connection.commit()
-        return True
-    except IntegrityError as error:
-        print(f"Member create integrity error: {error}")
-        return False
-    except Error as error:
-        print(f"Member create error: {error}")
-        return False
+            self.database.connection.commit()
+            return member_id
+        except Error as error:
+            print(f"회원 저장 중 오류 발생: {error}")
+            return None
