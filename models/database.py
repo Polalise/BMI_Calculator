@@ -82,8 +82,8 @@ class Database:
             print(f"Log save error: {error}")
             return False
 
-    def get_bmi_records(self, limit=10):
-        """최근 BMI 기록을 조회합니다."""
+    def get_bmi_records(self, member_id, limit=10):
+        """회원의 최근 BMI 기록을 조회합니다."""
         if self.connection is None:
             print("데이터베이스 연결이 없습니다.")
             return []
@@ -93,10 +93,11 @@ class Database:
                 query = """
                 SELECT *
                 FROM bmi_records
+                WHERE member_id = %s
                 ORDER BY created_at DESC
                 LIMIT %s
                 """
-                cursor.execute(query, (limit,))
+                cursor.execute(query, (member_id, limit))
                 return cursor.fetchall()
         except Error as error:
             print(f"데이터 조회 중 오류 발생: {error}")
