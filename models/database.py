@@ -102,6 +102,54 @@ class Database:
             print(f"데이터 조회 중 오류 발생: {error}")
             return []
 
+    def get_bmi_statistics(self):
+        """BMI records table summary statistics."""
+        if self.connection is None:
+            print("Database connection is not available.")
+            return {}
+
+        try:
+            with self.connection.cursor() as cursor:
+                summary_query = """
+                SELECT
+                    COUNT(*) AS total_count,
+                    ROUND(AVG(bmi), 2) AS average_bmi,
+                    ROUND(MIN(bmi), 2) AS min_bmi,
+                    ROUND(MAX(bmi), 2) AS max_bmi,
+                    ROUND(AVG(weight), 1) AS average_weight,
+                    ROUND(AVG(height), 1) AS average_height
+                FROM bmi_records
+                """
+                cursor.execute(summary_query)
+                summary = cursor.fetchone() or {}
+
+                category_query = """
+                SELECT category, COUNT(*) AS count
+                FROM bmi_records
+                GROUP BY category
+                ORDER BY count DESC, category ASC
+                """
+                cursor.execute(category_query)
+                categories = cursor.fetchall()
+
+                latest_query = """
+                SELECT bmi, category, weight, height, created_at
+                FROM bmi_records
+                ORDER BY created_at DESC
+                LIMIT 1
+                """
+                cursor.execute(latest_query)
+                latest_record = cursor.fetchone()
+
+            return {
+                "summary": summary,
+                "categories": categories,
+                "latest_record": latest_record,
+            }
+        except Error as error:
+            print(f"Statistics query error: {error}")
+            return {}
+
     def close(self):
         """데이터베이스 연결을 종료합니다."""
         if self.connection:
