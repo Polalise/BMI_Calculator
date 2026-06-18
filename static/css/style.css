@@ -229,6 +229,56 @@ button:hover {
     border-bottom: 0;
 }
 
+.no-data {
+    text-align: center;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    text-align: center;
+}
+
+.stat-card strong {
+    display: block;
+    margin-top: 6px;
+    color: #4CAF50;
+    font-size: 24px;
+}
+
+.stat-label {
+    color: #555;
+    font-weight: bold;
+}
+
+.ratio-bar {
+    display: inline-block;
+    width: 80px;
+    height: 8px;
+    margin-right: 8px;
+    overflow: hidden;
+    border-radius: 4px;
+    background-color: #e5e5e5;
+    vertical-align: middle;
+}
+
+.ratio-bar span {
+    display: block;
+    height: 100%;
+    background-color: #4CAF50;
 @media (max-width: 640px) {
     .container {
         width: calc(100% - 20px);
