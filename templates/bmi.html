@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BMI 입력</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="container">
@@ -12,7 +13,11 @@
         <nav class="nav-menu">
             <a href="/">메인</a>
             <a href="/history">이력 보기</a>
+            {% if is_logged_in %}
+            <a href="/member/logout">로그아웃</a>
+            {% else %}
             <a href="/member/login">로그인</a>
+            {% endif %}
         </nav>
 
         {% if error %}

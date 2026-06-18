@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, session
 
 from services.bmi_service import BMICalculator
 
@@ -21,7 +21,7 @@ def index():
 
 @bmi_bp.route("/bmi", methods=["GET"])
 def bmi_form():
-    return render_template("bmi.html", is_logged_in=False)
+    return render_template("bmi.html", is_logged_in="member_id" in session)
 
 
 @bmi_bp.route("/calculate", methods=["POST"])
@@ -34,13 +34,19 @@ def calculate():
             return render_template(
                 "bmi.html",
                 error="체중과 신장은 양수여야 합니다.",
-                is_logged_in=True,
+                is_logged_in="member_id" in session,
             )
 
         calculator = BMICalculator(weight, height)
         result = calculator.get_result()
 
-        db.save_bmi_record(weight, height, result["bmi"], result["category"])
+        db.save_bmi_record(
+            weight,
+            height,
+            result["bmi"],
+            result["category"],
+            member_id=session.get("member_id"),
+        )
 
         return render_template(
             "result.html",
@@ -53,5 +59,5 @@ def calculate():
         return render_template(
             "bmi.html",
             error="유효한 숫자를 입력해주세요.",
-            is_logged_in=True,
+            is_logged_in="member_id" in session,
         )
