@@ -20,15 +20,15 @@ def index():
 
 @bmi_bp.route("/bmi", methods=["GET"])
 def bmi_form():
-    is_logged_in = session.get("login_id") is not None
+    is_logged_in = session.get("member_id") is not None
     return render_template("bmi.html", is_logged_in=is_logged_in)
 
 
 @bmi_bp.route("/calculate", methods=["POST"])
 def calculate():
-    login_id = session.get("login_id")
+    member_id = session.get("member_id")
 
-    if login_id is None:
+    if member_id is None:
         return redirect(url_for("member.login"))
 
     try:
@@ -45,7 +45,13 @@ def calculate():
         calculator = BMICalculator(weight, height)
         result = calculator.get_result()
 
-        db.save_bmi_record(login_id, weight, height, result["bmi"], result["category"])
+        db.save_bmi_record(
+            weight,
+            height,
+            result["bmi"],
+            result["category"],
+            member_id=member_id,
+        )
 
         return render_template(
             "result.html",

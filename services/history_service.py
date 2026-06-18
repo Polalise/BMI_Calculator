@@ -7,11 +7,11 @@ class HistoryService:
     def __init__(self, database):
         self.bmi_record_model = BMIRecordModel(database)
 
-    def get_recent_records(self, limit=10):
-        return self.bmi_record_model.get_recent_records(limit)
+    def get_recent_records(self, member_id, limit=10):
+        return self.bmi_record_model.get_recent_records(member_id, limit)
 
-    def delete_record(self, record_id):
-        if record_id <= 0:
+    def delete_record(self, record_id, member_id):
+        if record_id <= 0 or member_id <= 0:
             return False
 
-        return self.bmi_record_model.delete_record(record_id)
+        return self.bmi_record_model.delete_record(record_id, member_id)
