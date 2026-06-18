@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>BMI 통계</title>
+</head>
+<body>
+    <div class="container">
+        <h1>BMI 통계</h1>
+
+        <nav class="nav-menu">
+            <a href="/">메인</a>
+            <a href="/bmi">BMI 입력</a>
+            <a href="/history">이력 보기</a>
+            <a href="/statistics/" class="active">통계</a>
+        </nav>
+
+        {% if statistics.has_data %}
+        <section class="stats-grid" aria-label="BMI 요약 통계">
+            <div class="stat-card">
+                <span class="stat-label">전체 기록</span>
+                <strong>{{ statistics.summary.total_count }}</strong>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">평균 BMI</span>
+                <strong>{{ statistics.summary.average_bmi }}</strong>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">최저 BMI</span>
+                <strong>{{ statistics.summary.min_bmi }}</strong>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">최고 BMI</span>
+                <strong>{{ statistics.summary.max_bmi }}</strong>
+            </div>
+        </section>
+
+        <section class="result-box">
+            <h2>최근 기록</h2>
+            <p>BMI: <strong>{{ statistics.latest_record.bmi }}</strong></p>
+            <p>분류: <strong class="category">{{ statistics.latest_record.category }}</strong></p>
+            <p>신장: <strong>{{ statistics.latest_record.height }} cm</strong></p>
+            <p>체중: <strong>{{ statistics.latest_record.weight }} kg</strong></p>
+            <p>등록일: <strong>{{ statistics.latest_record.created_at.strftime('%Y-%m-%d %H:%M') }}</strong></p>
+        </section>
+
+        <section>
+            <h2>분류별 분포</h2>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>분류</th>
+                        <th>건수</th>
+                        <th>비율</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in statistics.categories %}
+                    <tr>
+                        <td>{{ row.category }}</td>
+                        <td>{{ row.count }}</td>
+                        <td>
+                            <div class="ratio-bar" aria-label="{{ row.percentage }}%">
+                                <span style="width: {{ row.percentage }}%"></span>
+                            </div>
+                            {{ row.percentage }}%
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section class="bmi-info">
+            <h2>전체 평균</h2>
+            <ul>
+                <li>평균 신장: {{ statistics.summary.average_height }} cm</li>
+                <li>평균 체중: {{ statistics.summary.average_weight }} kg</li>
+            </ul>
+        </section>
+        {% else %}
+        <div class="no-data">
+            <p>저장된 BMI 기록이 없어 통계를 계산할 수 없습니다.</p>
+            <a class="back-btn" href="/bmi">BMI 기록 입력하기</a>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
