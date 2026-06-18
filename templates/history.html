@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <title>BMI 이력</title>
 </head>
 <body>
@@ -13,7 +12,6 @@
         <nav class="nav-menu">
             <a href="/">메인</a>
             <a href="/bmi">BMI 입력</a>
-            <a href="/statistics/">통계</a>
         </nav>
 
         {% if records %}
@@ -24,7 +22,7 @@
                         <th>신장 (cm)</th>
                         <th>체중 (kg)</th>
                         <th>BMI</th>
-                        <th>분류</th>
+                        <th>비만도</th>
                     </tr>
                 </thead>
                 <tbody>
