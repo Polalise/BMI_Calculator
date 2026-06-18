@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, session
+from flask import Blueprint, redirect, render_template, request, session, url_for
 
 from services.bmi_service import BMICalculator
 
@@ -9,7 +9,6 @@ db = None
 
 
 def init_db(database_instance):
-    """BMI 라우트에서 사용할 DB 인스턴스를 설정합니다."""
     global db
     db = database_instance
 
@@ -21,11 +20,17 @@ def index():
 
 @bmi_bp.route("/bmi", methods=["GET"])
 def bmi_form():
-    return render_template("bmi.html", is_logged_in="member_id" in session)
+    is_logged_in = session.get("login_id") is not None
+    return render_template("bmi.html", is_logged_in=is_logged_in)
 
 
 @bmi_bp.route("/calculate", methods=["POST"])
 def calculate():
+    login_id = session.get("login_id")
+
+    if login_id is None:
+        return redirect(url_for("member.login"))
+
     try:
         weight = float(request.form["weight"])
         height = float(request.form["height"])
@@ -33,20 +38,14 @@ def calculate():
         if weight <= 0 or height <= 0:
             return render_template(
                 "bmi.html",
-                error="체중과 신장은 양수여야 합니다.",
-                is_logged_in="member_id" in session,
+                error="Weight and height must be greater than 0.",
+                is_logged_in=True,
             )
 
         calculator = BMICalculator(weight, height)
         result = calculator.get_result()
 
-        db.save_bmi_record(
-            weight,
-            height,
-            result["bmi"],
-            result["category"],
-            member_id=session.get("member_id"),
-        )
+        db.save_bmi_record(login_id, weight, height, result["bmi"], result["category"])
 
         return render_template(
             "result.html",
@@ -58,6 +57,6 @@ def calculate():
     except ValueError:
         return render_template(
             "bmi.html",
-            error="유효한 숫자를 입력해주세요.",
-            is_logged_in="member_id" in session,
+            error="Please enter valid numbers.",
+            is_logged_in=True,
         )

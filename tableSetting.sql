@@ -1,23 +1,18 @@
-CREATE DATABASE IF NOT EXISTS bmi_calculator
+CREATE DATABASE IF NOT EXISTS test
 DEFAULT CHARACTER SET utf8mb4
 DEFAULT COLLATE utf8mb4_unicode_ci;
 
-USE bmi_calculator;
+USE test;
 
--- 1. 회원정보
-CREATE TABLE IF NOT EXISTS members (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    name VARCHAR(50) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    activation_type INT DEFAULT 1
+CREATE TABLE IF NOT EXISTS member (
+    login_id VARCHAR(50) PRIMARY KEY,
+    password VARCHAR(50) NOT NULL,
+    name VARCHAR(50) NOT NULL
 );
 
--- 2. BMI 데이터
 CREATE TABLE IF NOT EXISTS bmi_records (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    member_id INT,
+    login_id VARCHAR(50),
     weight FLOAT NOT NULL,
     height FLOAT NOT NULL,
     bmi FLOAT NOT NULL,
@@ -25,10 +20,9 @@ CREATE TABLE IF NOT EXISTS bmi_records (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 3. 로그
 CREATE TABLE IF NOT EXISTS activity_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    member_id INT,
+    login_id VARCHAR(50),
     action_type VARCHAR(20) NOT NULL,
     description VARCHAR(255),
     request_uri VARCHAR(255),
